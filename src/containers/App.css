@@ -1,0 +1,64 @@
+.App {
+  text-align: center;
+}
+
+.container {
+    display: grid;
+}
+
+input {
+    margin-right: 20px;
+    border-radius: 10px;
+    padding-left: 5px;
+    outline: none;
+}
+
+.btn-img {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    box-shadow: 3px 3px 1px 0 rgba(50, 50, 50, 0.75);
+
+}
+
+.btn-img:active {
+    box-shadow: 0 0 0 0 rgba(50, 50, 50, 0.75);
+    transform: translateY(3px);
+
+}
+
+div {
+    border: none;
+}
+
+.item {
+    display: grid;
+    grid-template-columns: auto 50px;
+    grid-template-rows: auto auto;
+    padding: 5px;
+    border-radius: 10px;
+    border: 1px solid grey;
+    margin: 5px 0;
+    box-shadow: 5px 5px 3px 0px rgba(50, 50, 50, 0.75);
+}
+.date {
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.outcomeList {
+    margin: 10px auto;
+    padding: 10px;
+    border: 1px solid grey;
+    border-radius: 10px;
+    box-shadow: 5px 5px 3px 0px rgba(50, 50, 50, 0.75);
+}
+
+.input-form {
+    padding: 10px;
+    border: 1px solid grey;
+    border-radius: 10px;
+    width: fit-content;
+    margin: 10px auto 0;
+    box-shadow: 5px 5px 3px 0px rgba(50, 50, 50, 0.75);
+}
