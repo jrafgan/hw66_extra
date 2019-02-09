@@ -4,17 +4,36 @@ import NoteInputForm from "../components/noteInputForm";
 import imgUrl from '../assets/61848.png'
 import NoteList from "../components/noteList";
 import axios from '../axios-url';
-import Spinner from "../components/UI/Spinner/Spinner";
-import withErrorHandler from "../hoc/withErrorHandler/withErrorHandler";
+import ErrorBoundary from "../ErrorBoundary/ErrorBoundary";
+import Backdrop from "../components/UI/Backdrop/Backdrop";
 
 
 class App extends Component {
 
-        newText = '';
-        state = {
+    constructor(props) {
+        super(props);
+        this.newText = '';
+        this.id = '';
+        this.state = {
             notes: [],
             loading: false,
+            newError: '',
         };
+        axios.interceptors.request.use(req => {
+            this.setState({loading: true});
+            return req;
+        });
+
+        axios.interceptors.response.use(res => {
+            this.setState({loading: false});
+            return res;
+        }, error=>{
+            this.setState({loading: false, newError: error});
+            this.newText = this.state.newError;
+            this.addBtn();
+            throw error;
+        });
+    }
 
 
 
@@ -24,7 +43,7 @@ class App extends Component {
     }
 
     componentDidMount() {
-        axios.get('notes.json').then(response => {
+        axios.get('errorLog.json').then(response => {
             if (response.data === null) return;
             let copy = this.state.notes;
             copy = Object.keys(response.data).map(id => {
@@ -35,7 +54,9 @@ class App extends Component {
     }
 
     addBtn(e) {
-        e.preventDefault();
+        if (e !== undefined) {
+            e.preventDefault();
+        }
         let date = new Date ();
         const time = date.toLocaleTimeString();
         const date2 = date.toLocaleDateString();
@@ -43,11 +64,12 @@ class App extends Component {
         let copy = this.state.notes;
         copy.push({note: this.newText, date: date});
         this.setState({notes: copy});
-        axios.post('notes.json', {note: this.newText, date: date})
+        axios.post('errorLog.json', {note: this.newText, date: date})
     }
 
     addNewNote(event) {
         this.newText = event.currentTarget.value;
+        this.id = event.currentTarget.id;
     }
 
     editNote(event) {
@@ -56,11 +78,9 @@ class App extends Component {
         const index = this.state.notes.findIndex(item => item.id === id);
         let copy = this.state.notes;
         copy[index].note = event.currentTarget.value;
-
-        this.setState({notes: copy});
-        console.log(this.state.notes);
-        this.setState({loading: true});
-        axios.patch('notes/' + id + 'json', {note: event.currentTarget.value})
+        axios.patch('errorLog/' + id + 'son', {note: event.currentTarget.value}).then(()=> {
+            this.setState({notes: copy});
+        });
     }
 
     deleteItem(event) {
@@ -69,8 +89,7 @@ class App extends Component {
         const index = copy.findIndex(item => item.id === id);
         copy.splice(index, 1);
         this.setState({notes: copy});
-        this.setState({loading: true});
-        axios.delete('notes/' + id + '.json')
+        axios.delete('errorLog/' + id + '.json')
     }
 
 
@@ -81,7 +100,7 @@ class App extends Component {
                 <NoteInputForm onChangeName={this.addNewNote.bind(this)} onSubmit={this.addBtn.bind(this)}/>
             </div>
             <div className="outcomeList">
-                <p>Notes of My Diary : </p>
+                <p>Измените Текст, чтобы увидеть ошибку : </p>
                 {this.state.notes.map((item, key) => {
                     return <NoteList id={item.id} text={item.note} date={item.date} imgUrl={imgUrl} key={key}
                                      onClick={this.deleteItem.bind(this)} onChange={this.editNote.bind(this)}/>
@@ -90,14 +109,19 @@ class App extends Component {
         </Fragment>);
 
         if (this.state.loading) {
-            form = <Spinner show={this.state.loading} close={!this.state.loading}/>
+            form = <Backdrop show={this.state.loading} close={!this.state.loading}/>
         }
+
         return (
+
+
             <div className="App container">
+                <ErrorBoundary>
                 {form}
+                </ErrorBoundary>
             </div>
         )
     }
 }
 
-export default withErrorHandler(App, axios);
+export default App;

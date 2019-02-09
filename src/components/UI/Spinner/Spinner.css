@@ -7,7 +7,7 @@
     color: #521751;
     font-size: 11px;
     text-indent: -99999em;
-    margin: 55px auto;
+    margin: 20% auto;
     position: relative;
     width: 10em;
     height: 10em;
@@ -15,6 +15,7 @@
     -webkit-transform: translateZ(0);
     -ms-transform: translateZ(0);
     transform: translateZ(0);
+    z-index: 100;
 }
 .Spinner:before,
 .Spinner:after {
